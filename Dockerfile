@@ -4,7 +4,7 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=$CUDA_HOME/bin:$PATH
 ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     git \
     curl \
@@ -14,28 +14,44 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libsm6 \
     libxrender1 \
+    build-essential \
+    bash \
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-    bash /tmp/miniconda.sh -b -p /opt/conda && \
-    rm /tmp/miniconda.sh && \
-    /opt/conda/bin/conda clean -tipsy
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh -O /tmp/anaconda.sh && \
+    /bin/sh /tmp/anaconda.sh -b -p /opt/conda && \
+    rm /tmp/anaconda.sh && \
+    /opt/conda/bin/conda clean -y -all
 
 ENV PATH /opt/conda/bin:$PATH
 
-RUN conda create -y -n base python=3.11 && \
-    echo "source activate base" > ~/.bashrc
+SHELL ["conda", "run", "-n", "base", "/bin/bash", "-c"]
+
+RUN conda update -n base -c defaults conda
 
 RUN conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 RUN pip install tensorflow[and-cuda]
 
+COPY ./code-server.crt /etc/ssl/certs/code-server.crt
+COPY ./code-server.key /etc/ssl/private/code-server.key
+RUN chmod 600 /etc/ssl/private/code-server.key
+RUN update-ca-certificates
+
 RUN curl -fsSL https://code-server.dev/install.sh | sh
+RUN code-server --install-extension vscodevim.vim
+RUN code-server --install-extension ms-python.python
+RUN code-server --install-extension ms-toolsai.jupyter
+
 EXPOSE 8080
 
 WORKDIR /workspace
+RUN chmod -R 777 /workspace
 
 RUN mkdir -p ~/.config/code-server/ && \
     echo "bind-addr: 0.0.0.0:8080" > ~/.config/code-server/config.yaml && \
+    echo "cert: /etc/ssl/certs/code-server.crt" >> ~/.config/code-server/config.yaml && \
+    echo "cert-key: /etc/ssl/private/code-server.key" >> ~/.config/code-server/config.yaml && \
     echo "auth: none" >> ~/.config/code-server/config.yaml
 
 CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "none"]
