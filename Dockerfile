@@ -37,14 +37,17 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh
 RUN code-server --install-extension vscodevim.vim
 RUN code-server --install-extension ms-python.python
 RUN code-server --install-extension ms-toolsai.jupyter
+RUN code-server --install-extension PKief.material-icon-theme
+RUN code-server --install-extension GitHub.github-vscode-theme
 
 EXPOSE 8080
 
 WORKDIR /workspace
 RUN chmod -R 777 /workspace
 
-COPY ./code-server.crt /etc/ssl/certs/code-server.crt
-COPY ./code-server.key /etc/ssl/private/code-server.key
+COPY code-server.crt /etc/ssl/certs/code-server.crt
+COPY code-server.key /etc/ssl/private/code-server.key
+COPY code-server.json /root/.local/share/code-server/User/settings.json
 
 RUN mkdir -p ~/.config/code-server/ && \
     echo "bind-addr: 0.0.0.0:8080" > ~/.config/code-server/config.yaml && \
@@ -52,4 +55,10 @@ RUN mkdir -p ~/.config/code-server/ && \
     echo "cert-key: /etc/ssl/private/code-server.key" >> ~/.config/code-server/config.yaml && \
     echo "auth: none" >> ~/.config/code-server/config.yaml
 
-CMD ["code-server", "--cert", "--bind-addr", "0.0.0.0:8080", "--auth", "none"]
+COPY src /tmp/src
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+CMD ["/usr/local/bin/entrypoint.sh"]
+
