@@ -20,3 +20,5 @@ elif env == 'prod':
     config = config['prod']
 else:
     raise NotImplementedError('specify WORKSPACE_ENV between [dev, prod].')
+
+# TODO define the output path of the metrics and the model weights (.pt)

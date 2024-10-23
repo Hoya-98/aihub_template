@@ -3,8 +3,8 @@ import csv
 import sklearn.metrics as skm
 import json
 import numpy as np
-from utils import binarize_confusion_matrix, excluder, flatten
-from metrics import classification_scalar_metrics, classification_curve_metrics
+from .utils import binarize_confusion_matrix, excluder
+from .metrics import classification_scalar_metrics, classification_curve_metrics
 
 
 class Report:
