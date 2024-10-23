@@ -33,11 +33,6 @@ RUN conda update -n base -c defaults conda
 RUN conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 RUN pip install tensorflow[and-cuda]
 
-COPY ./code-server.crt /etc/ssl/certs/code-server.crt
-COPY ./code-server.key /etc/ssl/private/code-server.key
-RUN chmod 600 /etc/ssl/private/code-server.key
-RUN update-ca-certificates
-
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 RUN code-server --install-extension vscodevim.vim
 RUN code-server --install-extension ms-python.python
@@ -48,10 +43,13 @@ EXPOSE 8080
 WORKDIR /workspace
 RUN chmod -R 777 /workspace
 
+COPY ./code-server.crt /etc/ssl/certs/code-server.crt
+COPY ./code-server.key /etc/ssl/private/code-server.key
+
 RUN mkdir -p ~/.config/code-server/ && \
     echo "bind-addr: 0.0.0.0:8080" > ~/.config/code-server/config.yaml && \
     echo "cert: /etc/ssl/certs/code-server.crt" >> ~/.config/code-server/config.yaml && \
     echo "cert-key: /etc/ssl/private/code-server.key" >> ~/.config/code-server/config.yaml && \
     echo "auth: none" >> ~/.config/code-server/config.yaml
 
-CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "none"]
+CMD ["code-server", "--cert", "--bind-addr", "0.0.0.0:8080", "--auth", "none"]
