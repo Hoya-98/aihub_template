@@ -60,7 +60,7 @@ COPY src /tmp/src
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENV WORKSPACE_ENV=prod
+ENV ENVIRONMENT=prod
 
 CMD ["/usr/local/bin/entrypoint.sh"]
 

@@ -1,24 +1,10 @@
-import os
-from pprint import pprint
+MODES  = ['Sample', 'Training', 'Validation']
+SHAPES = ['Single', 'Time series']
 
-config = {
-    'dev': {
-        'WORKSPACE_ENV': 'dev',
-        'WORKSPACE_PATH': '../../workspace',
-    },
-    'prod': {
-        'WORKSPACE_ENV': 'prod',
-        'WORKSPACE_PATH': '/workspace',
-    }
+CLASS_MAP = {
+    '1 degree': 0,
+    '2 degree (superficial)': 1,
+    '2 degree (deep)': 2,
+    '3 degree': 3,
+    '4 degree': 4,
 }
-
-env = os.getenv('WORKSPACE_ENV', 'dev')
-
-if env == 'dev':
-    config = config['dev']
-elif env == 'prod':
-    config = config['prod']
-else:
-    raise NotImplementedError('specify WORKSPACE_ENV between [dev, prod].')
-
-# TODO define the output path of the metrics and the model weights (.pt)

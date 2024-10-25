@@ -1,10 +1,13 @@
-from abc import ABC
 import csv
-import sklearn.metrics as skm
 import json
+from abc import ABC
+
 import numpy as np
+import sklearn.metrics as skm
+
+from .metrics import (classification_curve_metrics,
+                      classification_scalar_metrics)
 from .utils import binarize_confusion_matrix, excluder
-from .metrics import classification_scalar_metrics, classification_curve_metrics
 
 
 class Report:

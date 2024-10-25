@@ -1,6 +1,7 @@
+from pprint import pprint
+
 import numpy as np
 from reports import Report
-from pprint import pprint
 
 CLASS_MAP = {
     "apple"    : 0,

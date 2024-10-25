@@ -1,5 +1,6 @@
-import numpy as np
 import re
+
+import numpy as np
 import sklearn.metrics as skm
 
 
@@ -15,8 +16,9 @@ def safe_divide(a, b):
 
 
 def clopper_pearson(x, n, alpha=0.05):
-    import scipy
     import math
+
+    import scipy
     b = scipy.stats.beta.ppf
     lo = b(alpha / 2, x, n - x + 1)
     hi = b(1 - alpha / 2, x + 1, n - x)

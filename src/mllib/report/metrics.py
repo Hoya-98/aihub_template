@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+
+import numpy as np
 import sklearn.metrics as skm
 from utils import safe_divide
-import numpy as np
-    
+
 
 def fbeta_score(p, r, beta=1):
     if p == r == 0:
